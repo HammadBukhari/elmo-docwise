@@ -30,7 +30,6 @@ import {
 	useSidebar,
 } from "@workspace/ui/components/sidebar";
 import { DemoModePill } from "@/components/demo-mode-pill";
-import { Logo } from "@/components/logo";
 import { NavAppInfo } from "@/components/nav-app-info";
 import { type NavGroup, type NavItem, NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -125,7 +124,13 @@ export function AppSidebar({ section, organization, brand }: AppSidebarProps) {
 	];
 	const brandmark = (
 		<>
-			<Logo iconClassName="!size-5" />
+			<img
+				src="/branding/docwise-logo.png"
+				alt="Docwise"
+				width={813}
+				height={180}
+				className="h-auto w-40 shrink-0 object-contain dark:rounded dark:bg-white dark:p-1 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:object-cover group-data-[collapsible=icon]:object-left"
+			/>
 			<div className="ml-auto group-data-[collapsible=icon]:hidden">
 				<DemoModePill />
 			</div>

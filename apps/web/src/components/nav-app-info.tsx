@@ -1,4 +1,4 @@
-import { IconBrandGithub, IconWorld } from "@tabler/icons-react";
+import { IconWorld } from "@tabler/icons-react";
 import { useRouteContext } from "@tanstack/react-router";
 import type { ClientConfig } from "@workspace/config/types";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip";
@@ -7,7 +7,7 @@ export function NavAppInfo() {
 	const context = useRouteContext({ strict: false }) as { clientConfig?: ClientConfig };
 	const mode = context.clientConfig?.mode;
 
-	// Whitelabel deployments hide the version/website/github links.
+	// Whitelabel deployments hide the version and website links.
 	if (mode === "whitelabel") return null;
 
 	const linkClass =
@@ -26,19 +26,11 @@ export function NavAppInfo() {
 			<div className="flex items-center gap-1">
 				<Tooltip>
 					<TooltipTrigger
-						render={<a href="https://www.elmohq.com/" target="_blank" className={linkClass} rel="noopener" />}
+						render={<a href="https://docwise.org/" target="_blank" className={linkClass} rel="noopener" />}
 					>
 						<IconWorld className="size-4" />
 					</TooltipTrigger>
-					<TooltipContent>elmohq.com</TooltipContent>
-				</Tooltip>
-				<Tooltip>
-					<TooltipTrigger
-						render={<a href="https://github.com/elmohq/elmo" target="_blank" rel="noreferrer" className={linkClass} />}
-					>
-						<IconBrandGithub className="size-4" />
-					</TooltipTrigger>
-					<TooltipContent>View on GitHub</TooltipContent>
+					<TooltipContent>docwise.org</TooltipContent>
 				</Tooltip>
 			</div>
 		</div>
