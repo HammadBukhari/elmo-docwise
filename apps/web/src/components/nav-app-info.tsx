@@ -26,11 +26,11 @@ export function NavAppInfo() {
 			<div className="flex items-center gap-1">
 				<Tooltip>
 					<TooltipTrigger
-						render={<a href="https://www.elmohq.com/" target="_blank" className={linkClass} rel="noopener" />}
+						render={<a href="https://docwise.org/" target="_blank" className={linkClass} rel="noopener" />}
 					>
 						<IconWorld className="size-4" />
 					</TooltipTrigger>
-					<TooltipContent>elmohq.com</TooltipContent>
+					<TooltipContent>docwise.org</TooltipContent>
 				</Tooltip>
 				<Tooltip>
 					<TooltipTrigger

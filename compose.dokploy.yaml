@@ -1,0 +1,103 @@
+# Docwise fork of Elmo v0.3.0. Build from this repository.
+x-elmo-environment: &elmo-environment
+  NODE_ENV: production
+  DEPLOYMENT_MODE: local
+  DEFAULT_DELAY_HOURS: ${DEFAULT_DELAY_HOURS:-168}
+  APP_URL: https://grow.docwise.org
+  DATABASE_URL: postgres://elmo:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/elmo
+  BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET}
+  ELMO_ENCRYPTION_KEY: ${ELMO_ENCRYPTION_KEY:?Set ELMO_ENCRYPTION_KEY}
+  DISABLE_TELEMETRY: "1"
+  SCRAPE_TARGETS: ${SCRAPE_TARGETS:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  DATAFORSEO_LOGIN: ${DATAFORSEO_LOGIN:-}
+  DATAFORSEO_PASSWORD: ${DATAFORSEO_PASSWORD:-}
+  OLOSTEP_API_KEY: ${OLOSTEP_API_KEY:-}
+  OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+  CLORO_API_KEY: ${CLORO_API_KEY:-}
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: elmo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: elmo
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks: [elmo]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U elmo -d elmo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  db-migrate:
+    image: elmohq/elmo-db-migrate:0.3.0
+    restart: "no"
+    environment:
+      DATABASE_URL: postgres://elmo:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/elmo
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [elmo]
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: web
+      args:
+        DEPLOYMENT_MODE: local
+    restart: unless-stopped
+    environment: *elmo-environment
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    networks: [elmo, dokploy-network]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/setup-status').then(r=>r.json()).then(j=>process.exit(j.ready?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.elmo-grow-http.rule=Host(`grow.docwise.org`)
+      - traefik.http.routers.elmo-grow-http.entrypoints=web
+      - traefik.http.routers.elmo-grow-http.middlewares=elmo-grow-https
+      - traefik.http.middlewares.elmo-grow-https.redirectscheme.scheme=https
+      - traefik.http.middlewares.elmo-grow-https.redirectscheme.permanent=true
+      - traefik.http.routers.elmo-grow.rule=Host(`grow.docwise.org`)
+      - traefik.http.routers.elmo-grow.entrypoints=websecure
+      - traefik.http.routers.elmo-grow.tls.certresolver=letsencrypt
+      - traefik.http.routers.elmo-grow.service=elmo-grow
+      - traefik.http.services.elmo-grow.loadbalancer.server.port=3000
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: worker
+      args:
+        DEPLOYMENT_MODE: local
+    profiles: [tracking]
+    restart: unless-stopped
+    stop_grace_period: 35s
+    environment: *elmo-environment
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    networks: [elmo]
+
+volumes:
+  postgres_data:
+
+networks:
+  elmo:
+  dokploy-network:
+    external: true
