@@ -125,7 +125,7 @@ describe("cloro provider", () => {
 		});
 		expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
 			taskType: "CHATGPT",
-			payload: { prompt: "What is a well-reviewed speaker?", country: "US", include: { searchQueries: true } },
+			payload: { prompt: "What is a well-reviewed speaker?", country: "GB", include: { searchQueries: true } },
 		});
 		expect(fetchMock.mock.calls[1][0]).toBe("https://api.cloro.dev/v1/async/task/task-1");
 
@@ -156,7 +156,7 @@ describe("cloro provider", () => {
 			taskType: "GOOGLE",
 			payload: {
 				query: "best running shoes for beginners",
-				country: "US",
+				country: "GB",
 				include: { aioverview: { markdown: true } },
 			},
 		});
@@ -238,7 +238,7 @@ describe("cloro provider", () => {
 		expect(fetchMock).toHaveBeenCalledTimes(4);
 		expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
 			taskType: "PERPLEXITY",
-			payload: { prompt: "What is a well-reviewed speaker?", country: "US" },
+			payload: { prompt: "What is a well-reviewed speaker?", country: "GB" },
 		});
 		expect(result.textContent).toContain("Sonos Era 300");
 	});

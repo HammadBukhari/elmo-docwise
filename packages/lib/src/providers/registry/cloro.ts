@@ -49,8 +49,8 @@ const CLORO_TOTAL_TIMEOUT_MS = 60 * 60 * 1000;
 
 const CLORO_POLL_BASE_DELAY_MS = 2000;
 const CLORO_POLL_MAX_DELAY_MS = 10_000;
-// Cloro localizes every answer; default to a US audience.
-const CLORO_COUNTRY = "US";
+// Cloro localizes every answer; default to a United Kingdom audience.
+const CLORO_COUNTRY = "GB";
 
 /** Statuses meaning "accepted, not started" — see CLORO_GENERATION_TIMEOUT_MS. */
 const CLORO_QUEUED_STATUSES = new Set(["QUEUED", "PENDING", "CREATED", "SCHEDULED"]);
