@@ -118,20 +118,16 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 				{ rel: "stylesheet", href: appCss },
 				{ rel: "manifest", href: "/api/manifest" },
 				// Whitelabel uses its own icon URL for both favicon and iOS touch;
-				// Elmo default uses the committed SVG + opaque 180×180 PNG.
+				// Docwise uses its committed favicon and touch icon assets.
 				...(hasCustomIcon && branding?.icon
 					? [
 							{ rel: "icon", type: "image/png", href: branding.icon },
 							{ rel: "apple-touch-icon", href: branding.icon },
 						]
 					: [
-							// Icons live under /icons/ (not the root) so browsers' default
-							// probes for /favicon.ico and /apple-touch-icon.png 404 on
-							// whitelabel deployments instead of picking up Elmo assets.
-							{ rel: "icon", type: "image/svg+xml", href: "/icons/elmo-icon.svg" },
-							{ rel: "icon", type: "image/png", sizes: "96x96", href: "/icons/elmo-icon-96.png" },
-							{ rel: "icon", type: "image/x-icon", href: "/icons/favicon.ico" },
-							{ rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
+							{ rel: "icon", type: "image/png", sizes: "32x32", href: "/branding/docwise-icon-32.png" },
+							{ rel: "icon", type: "image/png", sizes: "192x192", href: "/branding/docwise-icon-192.png" },
+							{ rel: "apple-touch-icon", href: "/branding/docwise-apple-touch-icon.png" },
 						]),
 			],
 			scripts,
