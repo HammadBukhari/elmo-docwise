@@ -1,4 +1,4 @@
-# Docwise fork of Elmo v0.3.0. Build from this repository.
+# Docwise fork of Elmo. Build application and migrations from the same source.
 x-elmo-environment: &elmo-environment
   NODE_ENV: production
   DEPLOYMENT_MODE: local
@@ -36,7 +36,10 @@ services:
       start_period: 30s
 
   db-migrate:
-    image: elmohq/elmo-db-migrate:0.3.0
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: migrate
     restart: "no"
     environment:
       DATABASE_URL: postgres://elmo:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/elmo

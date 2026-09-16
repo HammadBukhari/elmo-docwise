@@ -39,10 +39,13 @@ const cols = [
 	{
 		heading: "Learn",
 		links: [
+			{ label: "What is AEO?", href: "/answer-engine-optimization" },
+			{ label: "What is GEO?", href: "/generative-engine-optimization" },
 			{ label: "AEO Glossary", href: "/glossary" },
 			{ label: "AI Search Guides", href: "/ai-search" },
 			{ label: "AEO by Industry", href: "/aeo-for" },
 			{ label: "Tool Directory", href: "/ai-visibility-tools" },
+			{ label: "Free & Open-Source Tools", href: "/ai-visibility-tools/category/open-source" },
 			{ label: "Compare Tools", href: "/ai-visibility-tools/compare" },
 		],
 	},
@@ -71,7 +74,7 @@ export function Footer() {
 							<Logo className="text-3xl" />
 						</Link>
 						<p className="mt-5 max-w-[36ch] text-pretty text-sm text-zinc-600">
-							Open source AI visibility tracking and optimization.
+							Elmo is the #1 open source AEO platform. Track and improve how AI answers talk about your brand.
 						</p>
 						<div className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-2.5 py-1 font-mono text-[11px] text-zinc-700">
 							<span className="size-1.5 rounded-full bg-emerald-500" />v{__APP_VERSION__}

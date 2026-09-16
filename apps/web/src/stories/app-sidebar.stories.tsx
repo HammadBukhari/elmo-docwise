@@ -18,7 +18,7 @@ import { SidebarInset, SidebarProvider } from "@workspace/ui/components/sidebar"
 import { expect, screen, userEvent, within } from "storybook/test";
 import { AppSidebar } from "@/components/app-sidebar";
 import { type ClientConfig, setMockClientConfig } from "./_mocks/config-client";
-import { setMockOrganizations } from "./_mocks/server-organizations";
+import { setMockOrganizations, setMockOrganizationsFailures } from "./_mocks/server-organizations";
 import { setMockRouteContext } from "./_mocks/tanstack-router";
 import { setMockAuth } from "./_mocks/use-auth";
 import { setMockBrand } from "./_mocks/use-brands";
@@ -214,7 +214,7 @@ export const Local: StoryObj = {
 
 		return (
 			<SidebarFrame label="Local — Self-hosted, full admin">
-				<AppSidebar scope="brand" brand={brand} organization={organization} />
+				<AppSidebar section="brand" brand={brand} organization={organization} />
 			</SidebarFrame>
 		);
 	},
@@ -228,6 +228,30 @@ export const Local: StoryObj = {
 	},
 };
 
+/** Organization settings — the keys page and the docs beside it */
+export const OrganizationSettings: StoryObj = {
+	render: () => {
+		configureMocks(localConfig, onboardedBrand, authedUser("Local Admin", "admin@localhost", "local-admin"), {
+			isAdmin: true,
+			hasReportAccess: true,
+		});
+
+		return (
+			<SidebarFrame label="Organization settings">
+				<AppSidebar section="organization" organization={organization} />
+			</SidebarFrame>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(await canvas.findByText("API Keys")).toBeVisible();
+		// The reference and the connection guide are docs, not settings.
+		await expect(await canvas.findByText("Docs")).toBeVisible();
+		await expect(await canvas.findByText("API")).toBeVisible();
+		await expect(await canvas.findByText("MCP")).toBeVisible();
+	},
+};
+
 /** Demo — read-only preview, seeded user, no admin */
 export const Demo = () => {
 	const demoUser = authedUser("Demo User", "demo@elmohq.com", "demo");
@@ -236,7 +260,7 @@ export const Demo = () => {
 
 	return (
 		<SidebarFrame label="Demo — Read-only, seeded user">
-			<AppSidebar scope="brand" brand={brand} organization={organization} />
+			<AppSidebar section="brand" brand={brand} organization={organization} />
 		</SidebarFrame>
 	);
 };
@@ -251,7 +275,7 @@ export const Whitelabel = () => {
 
 	return (
 		<SidebarFrame label="Whitelabel — Regular user, no admin section">
-			<AppSidebar scope="brand" brand={brand} organization={organization} />
+			<AppSidebar section="brand" brand={brand} organization={organization} />
 		</SidebarFrame>
 	);
 };
@@ -267,7 +291,7 @@ export const WhitelabelAdmin = () => {
 
 	return (
 		<SidebarFrame label="Whitelabel Admin — Admin links live in the account menu">
-			<AppSidebar scope="brand" brand={brand} organization={organization} />
+			<AppSidebar section="brand" brand={brand} organization={organization} />
 		</SidebarFrame>
 	);
 };
@@ -284,7 +308,7 @@ export const WhitelabelReportOnly: StoryObj = {
 
 		return (
 			<SidebarFrame label="Whitelabel Report-only — Reports is the only admin entry">
-				<AppSidebar scope="brand" brand={brand} organization={organization} />
+				<AppSidebar section="brand" brand={brand} organization={organization} />
 			</SidebarFrame>
 		);
 	},
@@ -307,7 +331,7 @@ export const AdminRoute: StoryObj = {
 
 		return (
 			<SidebarFrame label="Admin route — admin nav on the rail">
-				<AppSidebar scope="admin" />
+				<AppSidebar section="admin" />
 			</SidebarFrame>
 		);
 	},
@@ -331,7 +355,7 @@ export const Cloud: StoryObj = {
 
 		return (
 			<SidebarFrame label="Cloud — Billing and Team on the organization's rail">
-				<AppSidebar scope="organization" organization={organization} />
+				<AppSidebar section="organization" organization={organization} />
 			</SidebarFrame>
 		);
 	},
@@ -348,13 +372,37 @@ export const Cloud: StoryObj = {
 	},
 };
 
+/** The account menu's retry recovers the organization list after a failed load */
+export const OrganizationsRetry: StoryObj = {
+	render: () => {
+		configureMocks(cloudConfig, onboardedBrand, authedUser("Rita Retry", "rita@acme.com", "rita"), undefined, [
+			organization,
+		]);
+		setMockOrganizationsFailures(1);
+
+		return (
+			<SidebarFrame label="Organizations failed to load — retry">
+				<AppSidebar section="brand" brand={onboardedBrand} organization={organization} />
+			</SidebarFrame>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await userEvent.click(await canvas.findByRole("button", { name: "Account and organizations" }));
+
+		await userEvent.click(await screen.findByText("Couldn't load your organizations — retry"));
+
+		await expect(await screen.findByText(organization.name)).toBeInTheDocument();
+	},
+};
+
 export const WhitelabelHasNoBillingOrTeam: StoryObj = {
 	render: () => {
 		configureMocks(whitelabelConfig, onboardedBrand, authedUser("Alice", "alice@agency.com", "alice2"));
 
 		return (
 			<SidebarFrame label="Whitelabel — no Billing or Team item">
-				<AppSidebar scope="organization" organization={organization} />
+				<AppSidebar section="organization" organization={organization} />
 			</SidebarFrame>
 		);
 	},
@@ -375,7 +423,7 @@ export const ChoosePlanGate: StoryObj = {
 
 		return (
 			<SidebarFrame label="Cloud gate — nothing to navigate to yet">
-				<AppSidebar scope="account" />
+				<AppSidebar section="account" />
 			</SidebarFrame>
 		);
 	},
@@ -407,7 +455,7 @@ export const ManyOrganizations: StoryObj = {
 
 		return (
 			<SidebarFrame label="Many organizations — account menu links to the switcher">
-				<AppSidebar scope="brand" brand={brand} organization={organization} />
+				<AppSidebar section="brand" brand={brand} organization={organization} />
 			</SidebarFrame>
 		);
 	},
@@ -426,7 +474,7 @@ export const WhitelabelOnboarding = () => {
 
 	return (
 		<SidebarFrame label="Whitelabel Onboarding — Brand not onboarded, minimal nav">
-			<AppSidebar scope="brand" brand={brand} organization={organization} />
+			<AppSidebar section="brand" brand={brand} organization={organization} />
 		</SidebarFrame>
 	);
 };

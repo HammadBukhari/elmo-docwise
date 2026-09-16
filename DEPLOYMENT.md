@@ -1,9 +1,9 @@
 # Docwise deployment
 
-This fork deploys the `docwise-v0.3.0` branch, based on upstream tag `v0.3.0`. The sidebar website link and tooltip point to `https://docwise.org/`.
+Dokploy builds the `docwise-v0.3.0` branch of `HammadBukhari/elmo-docwise` using `compose.dokploy.yaml`. The branch name is retained for deployment continuity; it includes upstream main through `c7e9e0d0` (2026-09-16), including Elmo 0.4.1.
 
-Dokploy service `6ahOmWHInf9dVYjgtOIeb` in Elmo / production uses `compose.dokploy.yaml`. Web and worker build from this fork using the upstream Dockerfile. PostgreSQL and the matching migration image remain pinned to their existing versions. Secrets stay in Dokploy Environment and are not committed.
+Service `dcXDB0tMmq9acyXH15yfo` in Elmo / production serves https://grow.docwise.org. Retain app name `elmo-grow-wm02lj` and its PostgreSQL volume. Application, worker, and migrations build from the same source revision. Deployment runs the upstream migrations before starting the application.
 
-Retain the existing Dokploy app name `elmo-grow-2hhkzf` so Compose continues to use its existing PostgreSQL volume. Keep the configured provider keys, `COMPOSE_PROFILES=tracking`, `SCRAPE_TARGETS`, and `DEFAULT_DELAY_HOURS=168` when redeploying.
+Docwise branding, its website link, and UK scraper defaults are retained. Secrets stay in Dokploy Environment. Preserve provider configuration, `COMPOSE_PROFILES=tracking`, `SCRAPE_TARGETS`, and `DEFAULT_DELAY_HOURS=168`.
 
-The original image-based deployment configuration is kept separately in `../emlo-deployment` for rollback. To roll back, restore its Compose file as the Dokploy Raw source, retain all environment values, and redeploy the same service.
+Before a schema upgrade, take a database backup. A rollback across schema changes requires restoring that matching backup as well as the prior application revision; redeploying an older image alone is insufficient.

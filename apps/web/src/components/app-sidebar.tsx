@@ -3,11 +3,14 @@ import {
 	IconBuilding,
 	IconBuildings,
 	IconChartBar,
+	IconCode,
 	IconCpu,
 	IconCreditCard,
 	IconDashboard,
+	IconKey,
 	IconLink,
 	IconListDetails,
+	IconPlugConnected,
 	IconSitemap,
 	IconSpeakerphone,
 	IconTarget,
@@ -36,13 +39,11 @@ import { useDeploymentFeatures } from "@/hooks/use-deployment-features";
 import { useViewer } from "@/hooks/use-route-context";
 import { adminNavItems } from "@/lib/admin-nav";
 import type { OrganizationSummary } from "@/lib/organizations/types";
+import type { ShellScope } from "@/lib/shell-scope";
 
-type ScopeProps =
-	| { scope: "brand"; organization: OrganizationSummary; brand: BrandWithPrompts }
-	| { scope: "organization"; organization: OrganizationSummary }
-	| { scope: "admin" | "account" };
+export type AppSidebarProps = ShellScope;
 
-function organizationGroup(organization: OrganizationSummary, features?: FeaturesConfig): NavGroup {
+function organizationGroups(organization: OrganizationSummary, features?: FeaturesConfig): NavGroup[] {
 	const params = orgLinkParams(organization);
 	const items: NavItem[] = [
 		{ title: "Organization", link: { to: "/app/org/$org/settings", params }, icon: IconBriefcase, exact: true },
@@ -57,7 +58,18 @@ function organizationGroup(organization: OrganizationSummary, features?: Feature
 		items.push({ title: "Billing", link: { to: "/app/org/$org/settings/billing", params }, icon: IconCreditCard });
 	}
 
-	return { label: "Organization Settings", items };
+	items.push({ title: "API Keys", link: { to: "/app/org/$org/settings/api-keys", params }, icon: IconKey });
+
+	return [
+		{ label: "Organization Settings", items },
+		{
+			label: "Docs",
+			items: [
+				{ title: "API", link: { to: "/app/org/$org/settings/api", params }, icon: IconCode },
+				{ title: "MCP", link: { to: "/app/org/$org/settings/mcp", params }, icon: IconPlugConnected },
+			],
+		},
+	];
 }
 
 function brandGroups(organization: OrganizationSummary, brand: BrandWithPrompts): NavGroup[] {
@@ -105,8 +117,7 @@ function brandGroups(organization: OrganizationSummary, brand: BrandWithPrompts)
 	return groups;
 }
 
-export function AppSidebar(props: ScopeProps) {
-	const { scope } = props;
+export function AppSidebar({ section, organization, brand }: AppSidebarProps) {
 	const { setOpenMobile } = useSidebar();
 	const { isAdmin, hasReportAccess } = useViewer();
 	const features = useDeploymentFeatures();
@@ -115,12 +126,12 @@ export function AppSidebar(props: ScopeProps) {
 
 	// A gate page offers no destinations: every link would either 404 or bounce
 	// the user straight back to the gate.
-	const adminItems = scope === "account" ? [] : adminNavItems({ isAdmin, hasReportAccess, reportsEnabled });
+	const adminItems = section === "account" ? [] : adminNavItems({ isAdmin, hasReportAccess, reportsEnabled });
 
 	const groups: NavGroup[] = [
-		...(props.scope === "brand" ? brandGroups(props.organization, props.brand) : []),
-		...(props.scope === "organization" ? [organizationGroup(props.organization, features)] : []),
-		...(scope === "admin" && adminItems.length > 0 ? [{ label: "Admin", items: adminItems }] : []),
+		...(section === "brand" && organization && brand ? brandGroups(organization, brand) : []),
+		...(section === "organization" && organization ? organizationGroups(organization, features) : []),
+		...(section === "admin" && adminItems.length > 0 ? [{ label: "Admin", items: adminItems }] : []),
 	];
 	const brandmark = (
 		<>
@@ -144,7 +155,7 @@ export function AppSidebar(props: ScopeProps) {
 					<SidebarMenuItem>
 						{/* On a gate page the mark still says whose product this is, but it
 						    leads nowhere — /app would redirect right back here. */}
-						{scope === "account" ? (
+						{section === "account" ? (
 							<div className="flex items-center gap-2 p-2">{brandmark}</div>
 						) : (
 							<SidebarMenuButton size="lg" render={<Link to="/app" onClick={() => setOpenMobile(false)} />}>
@@ -158,7 +169,7 @@ export function AppSidebar(props: ScopeProps) {
 				<NavMain groups={groups} />
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser showOrganizations={scope !== "account"} adminItems={scope === "admin" ? [] : adminItems} />
+				<NavUser showOrganizations={section !== "account"} adminItems={section === "admin" ? [] : adminItems} />
 				<NavAppInfo />
 			</SidebarFooter>
 		</Sidebar>
