@@ -88,7 +88,9 @@ services:
     profiles: [tracking]
     restart: unless-stopped
     stop_grace_period: 35s
-    environment: *elmo-environment
+    environment:
+      <<: *elmo-environment
+      BRAND_SEARCH_COUNTRIES: ${BRAND_SEARCH_COUNTRIES:-}
     depends_on:
       db-migrate:
         condition: service_completed_successfully

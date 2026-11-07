@@ -11,6 +11,7 @@ import { startCredentialRefresh } from "@workspace/lib/secrets";
 import type { PgBoss } from "pg-boss";
 import { startBackfills } from "./backfills";
 import { getBoss } from "./boss";
+import { readBrandSearchCountries } from "./brand-search-country";
 import { registerHandlers } from "./handlers";
 import { DERIVE_RUNS_QUEUE, DERIVE_RUNS_QUEUE_OPTIONS, reprocessDays, requestUnjudgedRuns } from "./jobs/derive-runs";
 import {
@@ -44,6 +45,8 @@ async function createOrUpdateQueue(
 async function main() {
 	console.log("Starting pg-boss worker...");
 	assertRequiredEnv();
+	readBrandSearchCountries();
+	console.log("Brand search country settings validated");
 	const boss = getBoss();
 
 	// Awaited so a stored credential counts toward the validation below.

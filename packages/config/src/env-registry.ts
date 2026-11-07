@@ -143,6 +143,12 @@ export const ENV_REGISTRY: EnvVarSpec[] = [
 			"Comma-separated model:provider[:version][:online] entries. Example: chatgpt:olostep:online,google-ai-mode:olostep:online,copilot:olostep:online",
 	},
 	{
+		name: "BRAND_SEARCH_COUNTRIES",
+		scope: "server",
+		requiredBy: "optional",
+		description: "Docwise fork: JSON country overrides by brand ID. Use GB or CA. Brands with no override use GB.",
+	},
+	{
 		name: "SEARCHAPI_API_KEY",
 		scope: "server",
 		requiredBy: "dynamic-scrape-targets",

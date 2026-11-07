@@ -53,6 +53,7 @@ Before handing work back or opening a PR, run `pnpm lint` and get it passing; CI
 ## Git workflow
 
 - For Docwise Grow updates, merge upstream changes only from `elmohq/elmo` branch `main`. Do not merge upstream feature branches or pull requests, or copy commits that are not in `main`. Run the required checks before deployment.
+- Before you change tracking, provider dispatch, or the deployment environment, read [FORK_FEATURES.md](FORK_FEATURES.md) and keep its brand country rules.
 - Work happens in PRs against `main`.
 - Commit as you go: small, atomic commits that show real progress. Don't rewrite history (amend, rebase, force-push) to make it look tidy afterward.
 - Commit subjects are plain imperative sentences — no conventional-commit prefixes. Write `paginate top cited domains`, not `feat(web): paginate top cited domains`.

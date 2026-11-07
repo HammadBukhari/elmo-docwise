@@ -24,6 +24,7 @@ import { estimateRunCostUsd } from "@workspace/lib/usage";
 import { and, eq, gt, sql } from "drizzle-orm";
 import type { Job } from "pg-boss";
 import { getBoss } from "../boss";
+import { runBrandTarget } from "../brand-search-country";
 import { trackWorkerEvent } from "../telemetry";
 import { DERIVE_PRIORITY, sendDeriveRuns } from "./derive-runs";
 
@@ -195,10 +196,7 @@ async function runModelIteration({
 	const logPrefix = `[${config.model}_${runIndex}]`;
 
 	try {
-		const result = await providerImpl.run(config.model, promptValue, {
-			webSearch: config.webSearch,
-			version: config.version,
-		});
+		const result = await runBrandTarget(brand.id, promptValue, config, providerImpl);
 
 		// `webQueries` is stored exactly as the provider reported it — engines do
 		// sometimes genuinely search the prompt verbatim, and that's real data. The

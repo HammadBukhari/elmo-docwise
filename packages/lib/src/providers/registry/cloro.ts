@@ -1,7 +1,7 @@
 import { getCredential } from "../../secrets";
 import { type Citation, cloroAnswer, extractCitationsFromCloro } from "../../text-extraction";
 import { configuredWhen, reportedWebQueries } from "../config";
-import type { ModelConfig, Provider, ScrapeResult } from "../types";
+import type { ModelConfig, Provider, ProviderOptions, ScrapeResult } from "../types";
 import { pollTask, type TaskState } from "./poll-task";
 import { failureDetails, isTransientStatus, queriesFromKeys, responseError } from "./scrape-shared";
 
@@ -148,15 +148,19 @@ export const cloro: Provider = {
 		return null;
 	},
 
-	async run(model: string, prompt: string): Promise<ScrapeResult> {
+	async run(model: string, prompt: string, options?: ProviderOptions): Promise<ScrapeResult> {
 		const task = CLORO_TASKS[model];
 		if (!task) {
 			throw new Error(`Cloro: no task mapping for model "${model}". Supported: ${Object.keys(CLORO_TASKS).join(", ")}`);
 		}
+		const country = options?.country ?? CLORO_COUNTRY;
+		if (country !== "GB" && country !== "CA") {
+			throw new Error("Cloro tracking country must be GB or CA.");
+		}
 
 		const payload: Record<string, any> = {
 			[task.field]: prompt,
-			country: CLORO_COUNTRY,
+			country,
 			include: task.include,
 			...task.params,
 		};

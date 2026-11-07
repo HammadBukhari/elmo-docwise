@@ -7,3 +7,5 @@ Service `dcXDB0tMmq9acyXH15yfo` in Elmo / production serves https://grow.docwise
 Docwise branding, its website link, and UK scraper defaults are retained. Secrets stay in Dokploy Environment. Preserve provider configuration, `COMPOSE_PROFILES=tracking`, `SCRAPE_TARGETS`, and `DEFAULT_DELAY_HOURS=168`.
 
 Before a schema upgrade, take a database backup. A rollback across schema changes requires restoring that matching backup as well as the prior application revision; redeploying an older image alone is insufficient.
+
+For Canada tracking, set the country override by brand ID as specified in [Fork Features](FORK_FEATURES.md#search-country-by-brand). Keep `BRAND_SEARCH_COUNTRIES` empty until the Canada brand is ready.

@@ -13,6 +13,7 @@ export interface ScrapeResult {
 export interface ProviderOptions {
 	webSearch?: boolean;
 	version?: string;
+	country?: "GB" | "CA";
 }
 
 export interface StructuredResearchOptions<T> {
