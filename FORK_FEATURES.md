@@ -22,11 +22,20 @@ BRAND_SEARCH_COUNTRIES={"example-brand-id":"CA"}
 
 All other brands use the UK. Use an empty value or `{}` to keep every brand in the UK. Only `GB` and `CA` are accepted. The worker rejects invalid JSON, invalid country codes, and brand IDs with surrounding spaces at startup.
 
+A deployment can also use a separate file that contains only `BRAND_SEARCH_COUNTRIES`. This method keeps provider keys and other secrets in the existing service environment.
+
+1. Save the country setting in `brand-search-countries.env` in the service directory, one level above the Git checkout. Keep brand IDs out of the public repository.
+2. In the Dokploy custom Compose command, add `--env-file .env --env-file ../brand-search-countries.env` before `up`. Keep the existing project, Compose file, and deployment options.
+3. Start the custom command with `compose`. Dokploy adds `docker` to the command.
+4. Deploy the service and check the country value in the running worker before you enable the brand.
+
+Docker Compose loads the country file last, so its country setting takes priority. Dokploy writes the service `.env` file again at each deployment. Keep the separate country file outside the Git checkout and preserve it when you move the service. Dokploy environment-level values require a service reference; they do not enter the worker automatically.
+
 To start Canada tracking:
 
 1. Add the new brand and keep tracking disabled.
 2. Get its permanent ID from the `brands` table. Use the ID, not the display name, URL, or organization ID.
-3. Add the ID with value `CA` to `BRAND_SEARCH_COUNTRIES`. Keep any other overrides in the same JSON object.
+3. Add the ID with value `CA` to `BRAND_SEARCH_COUNTRIES` in the active environment or country file. Keep any other overrides in the same JSON object.
 4. Deploy the service to apply the setting.
 5. Check the worker logs, then enable tracking for the brand.
 
