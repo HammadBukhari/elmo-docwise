@@ -1,6 +1,6 @@
 # Docwise deployment
 
-Dokploy builds the `docwise-v0.3.0` branch of `HammadBukhari/elmo-docwise` using `compose.dokploy.yaml`. The branch name is retained for deployment continuity; it includes upstream main through `c7e9e0d0` (2026-09-16), including Elmo 0.4.1.
+Dokploy builds the `docwise-v0.3.0` branch of `HammadBukhari/elmo-docwise` using `compose.dokploy.yaml`. The branch name is retained for deployment continuity; it includes upstream `main` through `db2d52b5` (2026-11-06), including Elmo 0.7.8.
 
 Service `dcXDB0tMmq9acyXH15yfo` in Elmo / production serves https://grow.docwise.org. Retain app name `elmo-grow-wm02lj` and its PostgreSQL volume. Application, worker, and migrations build from the same source revision. Deployment runs the upstream migrations before starting the application.
 

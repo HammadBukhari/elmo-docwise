@@ -15,6 +15,7 @@ x-elmo-environment: &elmo-environment
   DATAFORSEO_PASSWORD: ${DATAFORSEO_PASSWORD:-}
   OLOSTEP_API_KEY: ${OLOSTEP_API_KEY:-}
   OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+  TYPESAFE_API_KEY: ${TYPESAFE_API_KEY:-}
   CLORO_API_KEY: ${CLORO_API_KEY:-}
 
 services:
@@ -53,8 +54,6 @@ services:
       context: .
       dockerfile: docker/Dockerfile
       target: web
-      args:
-        DEPLOYMENT_MODE: local
     restart: unless-stopped
     environment: *elmo-environment
     depends_on:
@@ -86,8 +85,6 @@ services:
       context: .
       dockerfile: docker/Dockerfile
       target: worker
-      args:
-        DEPLOYMENT_MODE: local
     profiles: [tracking]
     restart: unless-stopped
     stop_grace_period: 35s
